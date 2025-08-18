@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -26,8 +26,8 @@ model User {
 model Settings {
   id              String   @id @default(cuid())
   userId          String   @unique
-  units           String   @default("METRIC") // METRIC or IMPERIAL
-  tempUnit        String   @default("C") // C or F
+  units           Units    @default(METRIC)
+  tempUnit        TempUnit @default(C)
   recommend       Boolean  @default(true)
   defaultMethodId String?
   cupSizeMl       Int      @default(240) // user's "cup" definition
@@ -37,9 +37,15 @@ model Settings {
   @@map("settings")
 }
 
-// Enums replaced with string constants for SQLite compatibility
-// Units: "METRIC" | "IMPERIAL"  
-// TempUnit: "C" | "F"
+enum Units {
+  METRIC
+  IMPERIAL
+}
+
+enum TempUnit {
+  C
+  F
+}
 
 model BrewMethod {
   id           String        @id @default(cuid())
@@ -49,7 +55,7 @@ model BrewMethod {
   bloom        Boolean // does this method bloom?
   pours        Int // typical # pours not counting bloom
   notes        String?
-  presets      String? // method-specific advice as JSON string
+  presets      Json? // method-specific advice: grind, filters, temps, pour splits
   sessions     BrewSession[]
 
   @@map("brew_methods")
@@ -68,8 +74,8 @@ model BrewSession {
   waterTempC   Float?
   rating       Int? // 1–5
   notes        String?
-  pours        String? // timestamps & volumes as JSON string
-  bean         String? // variety, roaster, roast date as JSON string
+  pours        Json? // timestamps & volumes
+  bean         Json? // variety, roaster, roast date
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   method       BrewMethod @relation(fields: [methodId], references: [id])
 

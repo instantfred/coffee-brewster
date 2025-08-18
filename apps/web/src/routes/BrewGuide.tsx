@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { MethodCard } from '../components/MethodCard';
 import { BrewConfig } from '../components/BrewConfig';
 import { PourSchedule } from '../components/PourSchedule';
@@ -30,6 +30,7 @@ interface ActualPour {
 
 export function BrewGuide() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { settings } = useSettings();
   const [currentStep, setCurrentStep] = useState<BrewStep>('method');
   const [methods, setMethods] = useState<BrewMethod[]>([]);
@@ -51,8 +52,15 @@ export function BrewGuide() {
         if (response.success && response.methods) {
           setMethods(response.methods);
           
+          // Check for prefilled data from reverse brew
+          const locationState = location.state as any;
+          if (locationState?.prefilledMethod && locationState?.prefilledConfig) {
+            setSelectedMethod(locationState.prefilledMethod);
+            setBrewConfig(locationState.prefilledConfig);
+            setCurrentStep('schedule');
+          }
           // Auto-select default method if set
-          if (settings?.defaultMethodId) {
+          else if (settings?.defaultMethodId) {
             const defaultMethod = response.methods.find(m => m.id === settings.defaultMethodId);
             if (defaultMethod) {
               setSelectedMethod(defaultMethod);
@@ -71,7 +79,7 @@ export function BrewGuide() {
     };
 
     loadMethods();
-  }, [settings?.defaultMethodId]);
+  }, [settings?.defaultMethodId, location.state]);
 
   const handleMethodSelect = (method: BrewMethod) => {
     setSelectedMethod(method);

@@ -1,0 +1,175 @@
+import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcrypt';
+import { prisma } from '../../lib/prisma';
+import { generateAccessToken } from '../../lib/tokens';
+import { AppError } from '../../middleware/error';
+import { registerSchema, loginSchema } from '../../schemas/auth.schema';
+import { AuthenticatedRequest } from '../../middleware/auth';
+
+export const register = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password, displayName } = registerSchema.parse(req.body);
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new AppError('User with this email already exists', 409);
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // Create user and default settings
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        displayName,
+        settings: {
+          create: {
+            units: 'METRIC',
+            tempUnit: 'C',
+            recommend: true,
+            cupSizeMl: 240,
+          },
+        },
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        createdAt: true,
+      },
+    });
+
+    // Generate token
+    const token = generateAccessToken(user.id);
+
+    // Set cookie
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password } = loginSchema.parse(req.body);
+
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new AppError('Invalid credentials', 401);
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isPasswordValid) {
+      throw new AppError('Invalid credentials', 401);
+    }
+
+    // Generate token
+    const token = generateAccessToken(user.id);
+
+    // Set cookie
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged in successfully',
+      user: {
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    res.clearCookie('access_token');
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const me = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        createdAt: true,
+        settings: {
+          select: {
+            units: true,
+            tempUnit: true,
+            recommend: true,
+            defaultMethodId: true,
+            cupSizeMl: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

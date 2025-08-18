@@ -1,0 +1,19 @@
+{
+  "extends": "./packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@coffee-brewster/ui/*": ["./packages/ui/src/*"],
+      "@coffee-brewster/config/*": ["./packages/config/*"]
+    }
+  },
+  "references": [
+    {
+      "path": "./apps/api"
+    },
+    {
+      "path": "./apps/web"
+    }
+  ],
+  "files": []
+}

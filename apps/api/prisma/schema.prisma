@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  displayName  String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  settings     Settings?
+  sessions     BrewSession[]
+
+  @@map("users")
+}
+
+model Settings {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  units           Units    @default(METRIC)
+  tempUnit        TempUnit @default(C)
+  recommend       Boolean  @default(true)
+  defaultMethodId String?
+  cupSizeMl       Int      @default(240) // user's "cup" definition
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("settings")
+}
+
+enum Units {
+  METRIC
+  IMPERIAL
+}
+
+enum TempUnit {
+  C
+  F
+}
+
+model BrewMethod {
+  id           String        @id @default(cuid())
+  key          String        @unique // "v60", "chemex", "aeropress", "french_press", "moka"
+  name         String
+  defaultRatio Float // e.g., 15 for 1:15
+  bloom        Boolean // does this method bloom?
+  pours        Int // typical # pours not counting bloom
+  notes        String?
+  presets      Json? // method-specific advice: grind, filters, temps, pour splits
+  sessions     BrewSession[]
+
+  @@map("brew_methods")
+}
+
+model BrewSession {
+  id           String     @id @default(cuid())
+  userId       String
+  methodId     String
+  startedAt    DateTime   @default(now())
+  durationSec  Int
+  coffeeGrams  Float
+  waterMl      Float
+  yieldMl      Float
+  grindSetting String? // free text or grinder scale
+  waterTempC   Float?
+  rating       Int? // 1–5
+  notes        String?
+  pours        Json? // timestamps & volumes
+  bean         Json? // variety, roaster, roast date
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  method       BrewMethod @relation(fields: [methodId], references: [id])
+
+  @@map("brew_sessions")
+}

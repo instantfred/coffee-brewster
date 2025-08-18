@@ -18,6 +18,7 @@ export const getSettings = async (
         recommend: true,
         defaultMethodId: true,
         cupSizeMl: true,
+        soundEnabled: true,
       },
     });
 
@@ -63,6 +64,7 @@ export const updateSettings = async (
         recommend: updates.recommend ?? true,
         defaultMethodId: updates.defaultMethodId,
         cupSizeMl: updates.cupSizeMl || 240,
+        soundEnabled: updates.soundEnabled ?? true,
       },
       select: {
         units: true,
@@ -70,6 +72,7 @@ export const updateSettings = async (
         recommend: true,
         defaultMethodId: true,
         cupSizeMl: true,
+        soundEnabled: true,
       },
     });
 

@@ -67,6 +67,7 @@ export function Timer({ schedule, onFinish, onStep, onTick }: TimerProps) {
             setShowStepAlert(true);
             onStep?.(stepIndex);
             playNotificationSound();
+            triggerVibration();
             
             // Auto-hide step alert after 3 seconds
             setTimeout(() => setShowStepAlert(false), 3000);
@@ -90,6 +91,9 @@ export function Timer({ schedule, onFinish, onStep, onTick }: TimerProps) {
   }, [isRunning, isPaused, currentStepIndex, schedule, onStep, onTick]);
 
   const playNotificationSound = () => {
+    // Respect user's sound preference
+    if (!settings?.soundEnabled) return;
+    
     try {
       if (!audioContextRef.current) {
         audioContextRef.current = new AudioContext();
@@ -112,6 +116,18 @@ export function Timer({ schedule, onFinish, onStep, onTick }: TimerProps) {
       oscillator.stop(context.currentTime + 0.5);
     } catch (error) {
       console.warn('Could not play notification sound:', error);
+    }
+  };
+
+  const triggerVibration = () => {
+    // Check if vibration API is available (mobile devices)
+    if ('navigator' in window && 'vibrate' in navigator) {
+      try {
+        // Short vibration pattern: vibrate for 200ms, pause 100ms, vibrate 200ms
+        navigator.vibrate([200, 100, 200]);
+      } catch (error) {
+        console.warn('Could not trigger vibration:', error);
+      }
     }
   };
 

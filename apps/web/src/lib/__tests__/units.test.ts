@@ -21,25 +21,21 @@ import type { UserSettings } from '../api';
 
 describe('units', () => {
   const metricSettings: UserSettings = {
-    id: '1',
-    userId: '1',
     units: 'METRIC',
     tempUnit: 'C',
     recommend: true,
+    defaultMethodId: null,
     cupSizeMl: 240,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    soundEnabled: true,
   };
 
   const imperialSettings: UserSettings = {
-    id: '2',
-    userId: '1',
     units: 'IMPERIAL',
     tempUnit: 'F',
     recommend: true,
+    defaultMethodId: null,
     cupSizeMl: 240,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    soundEnabled: true,
   };
 
   describe('gToOz', () => {

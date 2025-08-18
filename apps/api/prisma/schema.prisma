@@ -31,6 +31,7 @@ model Settings {
   recommend       Boolean  @default(true)
   defaultMethodId String?
   cupSizeMl       Int      @default(240) // user's "cup" definition
+  soundEnabled    Boolean  @default(true)
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("settings")

@@ -33,6 +33,7 @@ export interface UserSettings {
   recommend: boolean;
   defaultMethodId: string | null;
   cupSizeMl: number;
+  soundEnabled: boolean;
 }
 
 export interface BrewMethod {

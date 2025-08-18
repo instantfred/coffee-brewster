@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './components/AuthProvider';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { Home } from './routes/Home';
 import { BrewGuide } from './routes/BrewGuide';
@@ -11,29 +13,75 @@ import { Register } from './routes/Auth/Register';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Routes>
-          {/* Auth routes without navbar */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          {/* Main app routes with navbar */}
-          <Route path="/*" element={
-            <>
-              <Navbar />
-              <main>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/brew" element={<BrewGuide />} />
-                  <Route path="/reverse" element={<ReverseBrew />} />
-                  <Route path="/logbook" element={<Logbook />} />
-                  <Route path="/settings" element={<Settings />} />
-                </Routes>
-              </main>
-            </>
-          } />
-        </Routes>
-      </div>
+      <AuthProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <Routes>
+            {/* Auth routes without navbar - redirect if already authenticated */}
+            <Route 
+              path="/login" 
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Login />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/register" 
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Register />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Main app routes with navbar */}
+            <Route path="/*" element={
+              <>
+                <Navbar />
+                <main>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    
+                    {/* Protected routes - require authentication */}
+                    <Route 
+                      path="/brew" 
+                      element={
+                        <ProtectedRoute>
+                          <BrewGuide />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/reverse" 
+                      element={
+                        <ProtectedRoute>
+                          <ReverseBrew />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/logbook" 
+                      element={
+                        <ProtectedRoute>
+                          <Logbook />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/settings" 
+                      element={
+                        <ProtectedRoute>
+                          <Settings />
+                        </ProtectedRoute>
+                      } 
+                    />
+                  </Routes>
+                </main>
+              </>
+            } />
+          </Routes>
+        </div>
+      </AuthProvider>
     </Router>
   );
 }

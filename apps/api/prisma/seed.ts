@@ -104,7 +104,10 @@ async function main() {
   // Seed brew methods
   for (const method of METHOD_PRESETS) {
     await prisma.brewMethod.create({
-      data: method,
+      data: {
+        ...method,
+        presets: JSON.stringify(method.presets), // Convert object to JSON string
+      },
     });
     console.log(`Created brew method: ${method.name}`);
   }

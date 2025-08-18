@@ -6,6 +6,7 @@ import { Home } from './routes/Home';
 import { BrewGuide } from './routes/BrewGuide';
 import { ReverseBrew } from './routes/ReverseBrew';
 import { Logbook } from './routes/Logbook';
+import { SessionDetail } from './routes/SessionDetail';
 import { Settings } from './routes/Settings';
 import { Login } from './routes/Auth/Login';
 import { Register } from './routes/Auth/Register';
@@ -64,6 +65,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <Logbook />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/logbook/:id" 
+                      element={
+                        <ProtectedRoute>
+                          <SessionDetail />
                         </ProtectedRoute>
                       } 
                     />

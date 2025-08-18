@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MethodCard } from '../components/MethodCard';
 import { BrewConfig } from '../components/BrewConfig';
 import { PourSchedule } from '../components/PourSchedule';
+import { Timer } from '../components/Timer';
+import { SessionForm } from '../components/SessionForm';
 import { useSettings } from '../state/useSettings';
 import { api, BrewMethod } from '../lib/api';
 
-type BrewStep = 'method' | 'configure' | 'schedule' | 'timer';
+type BrewStep = 'method' | 'configure' | 'schedule' | 'timer' | 'session';
 
 interface BrewConfigData {
   ratio: number;
@@ -17,7 +20,16 @@ interface BrewConfigData {
   schedule: any[];
 }
 
+interface ActualPour {
+  scheduledAtSec: number;
+  actualAtSec: number;
+  volumeMl: number;
+  label: string;
+  completed: boolean;
+}
+
 export function BrewGuide() {
+  const navigate = useNavigate();
   const { settings } = useSettings();
   const [currentStep, setCurrentStep] = useState<BrewStep>('method');
   const [methods, setMethods] = useState<BrewMethod[]>([]);
@@ -25,6 +37,11 @@ export function BrewGuide() {
   const [brewConfig, setBrewConfig] = useState<BrewConfigData | null>(null);
   const [isLoadingMethods, setIsLoadingMethods] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Timer-related state
+  const [timerElapsedSec, setTimerElapsedSec] = useState(0);
+  const [actualPours, setActualPours] = useState<ActualPour[]>([]);
+  const [isSavingSession, setIsSavingSession] = useState(false);
 
   // Load brewing methods
   useEffect(() => {
@@ -67,7 +84,57 @@ export function BrewGuide() {
 
   const handleStartBrew = () => {
     setCurrentStep('timer');
-    // TODO: Implement timer component in Task 13
+  };
+
+  const handleTimerFinish = (elapsedSec: number, pours: ActualPour[]) => {
+    setTimerElapsedSec(elapsedSec);
+    setActualPours(pours);
+    setCurrentStep('session');
+  };
+
+  const handleSaveSession = async (sessionData: any) => {
+    if (!selectedMethod || !brewConfig) return;
+
+    setIsSavingSession(true);
+    try {
+      const sessionPayload = {
+        methodId: selectedMethod.id,
+        durationSec: timerElapsedSec,
+        coffeeGrams: brewConfig.coffeeGrams,
+        waterMl: brewConfig.waterMl,
+        yieldMl: brewConfig.customYield ? (brewConfig.yieldMl || 0) : (brewConfig.cups * (settings?.cupSizeMl || 240)),
+        grindSetting: sessionData.grindSetting,
+        waterTempC: sessionData.waterTempC,
+        rating: sessionData.rating,
+        notes: sessionData.notes,
+        pours: actualPours.map(pour => ({
+          atSec: pour.actualAtSec,
+          volumeMl: pour.volumeMl,
+          label: pour.label,
+        })),
+        bean: {
+          variety: sessionData.beanVariety,
+          roaster: sessionData.roaster,
+          roastDate: sessionData.roastDate,
+        },
+      };
+
+      const response = await api.createSession(sessionPayload);
+      if (response.success) {
+        navigate('/logbook');
+      } else {
+        throw new Error(response.error || 'Failed to save session');
+      }
+    } catch (error) {
+      console.error('Failed to save session:', error);
+      setError('Failed to save session. Please try again.');
+    } finally {
+      setIsSavingSession(false);
+    }
+  };
+
+  const handleSkipSession = () => {
+    navigate('/');
   };
 
   const handleBackToMethods = () => {
@@ -286,29 +353,54 @@ export function BrewGuide() {
         ) : null;
 
       case 'timer':
-        return (
-          <div className="card p-8">
-            <div className="text-center">
-              <div className="text-primary-600 dark:text-primary-400 mb-4">
-                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+        return selectedMethod && brewConfig ? (
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => setCurrentStep('schedule')}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                      Brewing {selectedMethod.name}
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Follow the timer and complete each step
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                Timer Coming Soon
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
-                The interactive brewing timer will be implemented in Task 13.
-              </p>
-              <button
-                onClick={() => setCurrentStep('schedule')}
-                className="btn btn-secondary"
-              >
-                Back to Schedule
-              </button>
             </div>
+
+            <Timer
+              schedule={brewConfig.schedule}
+              onFinish={handleTimerFinish}
+            />
           </div>
-        );
+        ) : null;
+
+      case 'session':
+        return selectedMethod && brewConfig ? (
+          <div className="max-w-4xl mx-auto">
+            <SessionForm
+              method={selectedMethod}
+              durationSec={timerElapsedSec}
+              coffeeGrams={brewConfig.coffeeGrams}
+              waterMl={brewConfig.waterMl}
+              yieldMl={brewConfig.customYield ? (brewConfig.yieldMl || 0) : (brewConfig.cups * (settings?.cupSizeMl || 240))}
+              actualPours={actualPours}
+              onSave={handleSaveSession}
+              onCancel={handleSkipSession}
+              isLoading={isSavingSession}
+            />
+          </div>
+        ) : null;
 
       default:
         return null;

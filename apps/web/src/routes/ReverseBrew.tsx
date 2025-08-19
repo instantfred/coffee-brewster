@@ -131,7 +131,7 @@ export function ReverseBrew() {
         targetYieldMl: data.useCustomYield ? data.targetYieldMl : undefined,
       };
 
-      const response = await api.reverseBrewCalculate(payload);
+      const response = await api.calculateReverseBrew(payload);
       
       if (response.success && response.recipe) {
         setBrewPlan(response.recipe);

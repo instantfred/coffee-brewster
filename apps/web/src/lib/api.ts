@@ -3,11 +3,13 @@ const API_BASE_URL = '/api';
 export interface ApiResponse<T = any> {
   success: boolean;
   message?: string;
+  error?: string;
   data?: T;
   user?: T;
   settings?: T;
   methods?: T;
   sessions?: T;
+  session?: T;
   recipe?: T;
   pagination?: {
     page: number;

@@ -116,7 +116,7 @@ export function BrewGuide() {
         rating: sessionData.rating,
         notes: sessionData.notes,
         pours: actualPours.map(pour => ({
-          atSec: pour.actualAtSec,
+          timestamp: pour.actualAtSec,
           volumeMl: pour.volumeMl,
           label: pour.label,
         })),

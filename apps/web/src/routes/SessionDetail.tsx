@@ -25,10 +25,9 @@ export function SessionDetail() {
         if (response.success && response.session) {
           setSession(response.session);
           
-          // Load method details
-          const methodResponse = await api.getMethod(response.session.methodId);
-          if (methodResponse.success && methodResponse.method) {
-            setMethod(methodResponse.method);
+          // Use method details included in session response
+          if (response.session.method) {
+            setMethod(response.session.method);
           }
         } else {
           throw new Error(response.error || 'Session not found');

@@ -301,7 +301,7 @@ export function BrewGuide() {
                     onClick={() => setCurrentStep('schedule')}
                     className="btn btn-primary"
                   >
-                    Preview Schedule
+                    Brew Preview
                   </button>
                 )}
               </div>

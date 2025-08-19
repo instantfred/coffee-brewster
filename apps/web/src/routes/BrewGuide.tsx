@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MethodCard } from '../components/MethodCard';
 import { BrewConfig } from '../components/BrewConfig';
@@ -86,9 +86,9 @@ export function BrewGuide() {
     setCurrentStep('configure');
   };
 
-  const handleConfigChange = (config: BrewConfigData) => {
+  const handleConfigChange = useCallback((config: BrewConfigData) => {
     setBrewConfig(config);
-  };
+  }, []);
 
   const handleStartBrew = () => {
     setCurrentStep('timer');

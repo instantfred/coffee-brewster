@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -47,7 +47,7 @@ export function BrewConfig({ method, onConfigChange }: BrewConfigProps) {
   const watchedValues = watch();
   const { ratio, cups, customYield, yieldMl, coffeeGrams, waterMl } = watchedValues;
 
-  // Calculate brewing parameters when values change
+  // Calculate brewing parameters without setValue to avoid infinite loops
   useEffect(() => {
     if (!settings) return;
 
@@ -66,6 +66,7 @@ export function BrewConfig({ method, onConfigChange }: BrewConfigProps) {
     const absorption = calculatedCoffee * (absorptionCoef[method.key] || 2.0);
     const totalWater = targetYield + absorption;
 
+    // Update form values for coffee and water amounts
     setValue('coffeeGrams', calculatedCoffee);
     setValue('waterMl', totalWater);
 
@@ -131,8 +132,16 @@ export function BrewConfig({ method, onConfigChange }: BrewConfigProps) {
     }
 
     setSchedule(newSchedule);
-    onConfigChange({ ...watchedValues, schedule: newSchedule });
-  }, [ratio, cups, customYield, yieldMl, method, settings, setValue, onConfigChange, watchedValues]);
+    onConfigChange({ 
+      ratio, 
+      cups, 
+      customYield, 
+      yieldMl,
+      coffeeGrams: calculatedCoffee,
+      waterMl: totalWater,
+      schedule: newSchedule 
+    });
+  }, [ratio, cups, customYield, yieldMl, method.key, method.bloom, settings]);
 
   if (!settings) return null;
 

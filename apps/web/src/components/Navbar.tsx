@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../state/useAuth';
-import { Logo } from './Logo';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -33,7 +32,11 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3">
-              <Logo size="sm" />
+              <img 
+                src="/coffee-cup-icon.png" 
+                alt="Coffee Brewster Logo" 
+                className="w-8 h-8 object-contain"
+              />
               <span className="text-xl font-bold text-gray-900 dark:text-white">
                 Coffee Brewster
               </span>

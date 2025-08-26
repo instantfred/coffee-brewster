@@ -8,12 +8,13 @@ interface MethodCardProps {
   isSelected?: boolean;
 }
 
+// Map method keys to their icon filenames in the public folder
 const methodIcons: Record<string, string> = {
-  v60: '⏳', // Pour over icon
-  chemex: '🔺', // Triangle shape
-  aeropress: '🔄', // Press icon
-  french_press: '☕', // Coffee cup
-  moka: '🏺', // Pot icon
+  v60: '/v60-craft-coffee-icon.png',
+  chemex: '/v60-coffee-icon.png', // Using V60 icon for Chemex as they're both pour-over methods
+  aeropress: '/coffee-press-icon.png',
+  french_press: '/french-pres-icon.png',
+  moka: '/moka-pot-icon.png',
 };
 
 export function MethodCard({ method, onSelect, isSelected = false }: MethodCardProps) {
@@ -33,8 +34,12 @@ export function MethodCard({ method, onSelect, isSelected = false }: MethodCardP
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className="text-3xl">
-            {methodIcons[method.key] || '☕'}
+          <div className="w-12 h-12 flex-shrink-0">
+            <img 
+              src={methodIcons[method.key] || '/coffee-cup-icon.png'} 
+              alt={`${method.name} icon`}
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../state/useAuth';
-import { Logo } from '../components/Logo';
 
 export function Home() {
   const { isAuthenticated, user } = useAuth();
@@ -11,7 +10,11 @@ export function Home() {
         <div className="max-w-4xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
-              <Logo size="lg" />
+              <img 
+                src="/coffee-cup-icon.png" 
+                alt="Coffee Brewster Logo" 
+                className="w-16 h-16 object-contain"
+              />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               Welcome back, {user?.displayName || user?.email}!
@@ -104,7 +107,11 @@ export function Home() {
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
-            <Logo size="lg" />
+            <img 
+              src="/coffee-cup-icon.png" 
+              alt="Coffee Brewster Logo" 
+              className="w-16 h-16 object-contain"
+            />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">
             Coffee Brewster

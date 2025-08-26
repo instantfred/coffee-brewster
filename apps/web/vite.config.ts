@@ -37,20 +37,37 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\.*/i,
-            handler: 'CacheFirst',
+            // Skip caching for auth endpoints
+            urlPattern: /\/api\/(auth|settings)/i,
+            handler: 'NetworkOnly',
+            options: {
+              backgroundSync: {
+                name: 'auth-queue',
+                options: {
+                  maxRetentionTime: 60 * 10 // Retry for max of 10 minutes
+                }
+              }
+            }
+          },
+          {
+            // Cache other API endpoints with network-first strategy
+            urlPattern: /\/api\//i,
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
+              networkTimeoutSeconds: 3,
               expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
               },
-              cacheKeyWillBeUsed: async ({ request }) => {
-                return `${request.url}?${Date.now()}`;
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           }
-        ]
+        ],
+        // Don't cache navigations to ensure fresh auth checks
+        navigateFallback: null
       }
     })
   ],

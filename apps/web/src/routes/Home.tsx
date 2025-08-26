@@ -170,7 +170,7 @@ export function Home() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link to="/register" className="btn btn-primary">
-              Sign Up Free
+              Sign Up
             </Link>
             <Link to="/login" className="btn btn-secondary">
               Sign In

@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../state/useAuth';
 import { Logo } from './Logo';
 
 const navigation = [
   { name: 'Home', href: '/' },
   { name: 'Brew', href: '/brew' },
-  { name: 'Reverse', href: '/reverse' },
+  // { name: 'Reverse', href: '/reverse' }, // disable for now
   { name: 'Logbook', href: '/logbook' },
   { name: 'Settings', href: '/settings' },
 ];
 
 export function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -20,6 +21,7 @@ export function Navbar() {
     try {
       await logout();
       setIsUserMenuOpen(false);
+      navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -45,11 +47,10 @@ export function Navbar() {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
+                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
                 >
                   {item.name}
                 </Link>
@@ -144,11 +145,10 @@ export function Navbar() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`block px-3 py-2 rounded-lg text-base font-medium transition-colors ${
-                  isActive
-                    ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
+                className={`block px-3 py-2 rounded-lg text-base font-medium transition-colors ${isActive
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
+                  : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
               >
                 {item.name}
               </Link>

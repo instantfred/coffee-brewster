@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../state/useAuth';
 import { useSettings } from '../state/useSettings';
 import { formatCupSize } from '../lib/units';
@@ -23,6 +24,7 @@ type SettingsFormData = z.infer<typeof settingsSchema>;
 export function Settings() {
   const { user, logout } = useAuth();
   const { settings, updateSettings, isLoading, error } = useSettings();
+  const navigate = useNavigate();
   const [methods, setMethods] = useState<any[]>([]);
   const [isLoadingMethods, setIsLoadingMethods] = useState(true);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -81,6 +83,8 @@ export function Settings() {
   const handleLogout = async () => {
     try {
       await logout();
+      // Navigate to login page after successful logout
+      navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }

@@ -135,8 +135,11 @@ export const me = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      throw new AppError('Unauthorized', 401);
+    }
     const user = await prisma.user.findUnique({
-      where: { id: req.user!.id },
+      where: { id: req.user.id },
       select: {
         id: true,
         email: true,

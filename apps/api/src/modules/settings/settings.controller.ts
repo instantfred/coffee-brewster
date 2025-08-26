@@ -10,8 +10,11 @@ export const getSettings = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      throw new AppError('Unauthorized', 401);
+    }
     const settings = await prisma.settings.findUnique({
-      where: { userId: req.user!.id },
+      where: { userId: req.user.id },
       select: {
         units: true,
         tempUnit: true,
@@ -41,6 +44,9 @@ export const updateSettings = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      throw new AppError('Unauthorized', 401);
+    }
     const updates = updateSettingsSchema.parse(req.body);
 
     // If defaultMethodId is provided, verify it exists
@@ -55,10 +61,10 @@ export const updateSettings = async (
     }
 
     const settings = await prisma.settings.upsert({
-      where: { userId: req.user!.id },
+      where: { userId: req.user.id },
       update: updates,
       create: {
-        userId: req.user!.id,
+        userId: req.user.id,
         units: updates.units || 'METRIC',
         tempUnit: updates.tempUnit || 'C',
         recommend: updates.recommend ?? true,

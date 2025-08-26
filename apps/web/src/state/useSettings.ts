@@ -10,6 +10,7 @@ interface SettingsState {
   loadSettings: () => Promise<void>;
   updateSettings: (updates: Partial<UserSettings>) => Promise<void>;
   clearError: () => void;
+  resetToDefaults: () => void;
 }
 
 const defaultSettings: UserSettings = {
@@ -84,5 +85,13 @@ export const useSettings = create<SettingsState>((set, get) => ({
 
   clearError: () => {
     set({ error: null });
+  },
+
+  resetToDefaults: () => {
+    set({ 
+      settings: defaultSettings,
+      isLoading: false,
+      error: null
+    });
   },
 }));

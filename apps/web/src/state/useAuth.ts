@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api, User, UserSettings } from '../lib/api';
+import { useSettings } from './useSettings';
 
 interface AuthState {
   user: User | null;
@@ -84,12 +85,17 @@ export const useAuth = create<AuthState>((set, get) => ({
       // Even if logout request fails, clear local state
       console.error('Logout request failed:', error);
     } finally {
+      // Clear auth state
       set({
         user: null,
         isAuthenticated: false,
         isLoading: false,
         error: null,
       });
+      
+      // Reset settings to defaults
+      const settingsState = useSettings.getState();
+      settingsState.resetToDefaults();
     }
   },
 

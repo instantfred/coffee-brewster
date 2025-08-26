@@ -10,12 +10,15 @@ export const getMethods = async (
 ) => {
   try {
     // Get user's settings to determine if recommendations should be shown
-    const userSettings = await prisma.settings.findUnique({
-      where: { userId: req.user!.id },
-      select: { recommend: true },
-    });
-
-    const showRecommendations = userSettings?.recommend ?? true;
+    let showRecommendations = true;
+    
+    if (req.user) {
+      const userSettings = await prisma.settings.findUnique({
+        where: { userId: req.user.id },
+        select: { recommend: true },
+      });
+      showRecommendations = userSettings?.recommend ?? true;
+    }
 
     const methods = await prisma.brewMethod.findMany({
       select: {

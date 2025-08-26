@@ -225,7 +225,7 @@ export function Logbook() {
                 ref={searchInputRef}
                 type="text"
                 id="search"
-                placeholder="Search by notes, bean variety, roaster..."
+                placeholder="Search by notes, variety, origin, roaster..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
                 className="input pl-10 w-full"

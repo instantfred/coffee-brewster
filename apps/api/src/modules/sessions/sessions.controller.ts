@@ -27,19 +27,17 @@ export const getSessions = async (
       where.methodId = methodId;
     }
 
-    if (q) {
-      where.OR = [
-        { notes: { contains: q, mode: 'insensitive' } },
-        { grindSetting: { contains: q, mode: 'insensitive' } },
-        { method: { name: { contains: q, mode: 'insensitive' } } },
-      ];
-    }
+    // For SQLite compatibility, we'll do a broader search and filter in memory
+    let sessions: any[];
+    let total: number;
 
-    const [sessions, total] = await Promise.all([
-      prisma.brewSession.findMany({
-        where,
-        skip,
-        take: limit,
+    if (q) {
+      // Fetch all sessions for the user when searching (we'll filter in memory)
+      const allSessions = await prisma.brewSession.findMany({
+        where: {
+          userId: req.user!.id,
+          ...(methodId && { methodId }),
+        },
         orderBy: { startedAt: 'desc' },
         include: {
           method: {
@@ -49,9 +47,57 @@ export const getSessions = async (
             },
           },
         },
-      }),
-      prisma.brewSession.count({ where }),
-    ]);
+      });
+
+      // Filter sessions based on search query
+      const searchLower = q.toLowerCase();
+      const filteredSessions = allSessions.filter(session => {
+        // Search in regular fields
+        if (
+          session.notes?.toLowerCase().includes(searchLower) ||
+          session.grindSetting?.toLowerCase().includes(searchLower) ||
+          session.method.name.toLowerCase().includes(searchLower)
+        ) {
+          return true;
+        }
+
+        // Search in bean JSON fields
+        if (session.bean && typeof session.bean === 'object') {
+          const bean = session.bean as any;
+          return (
+            bean.variety?.toLowerCase().includes(searchLower) ||
+            bean.roaster?.toLowerCase().includes(searchLower) ||
+            bean.origin?.toLowerCase().includes(searchLower) ||
+            bean.name?.toLowerCase().includes(searchLower)
+          );
+        }
+
+        return false;
+      });
+
+      // Apply pagination to filtered results
+      total = filteredSessions.length;
+      sessions = filteredSessions.slice(skip, skip + limit);
+    } else {
+      // No search query, use normal pagination
+      [sessions, total] = await Promise.all([
+        prisma.brewSession.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { startedAt: 'desc' },
+          include: {
+            method: {
+              select: {
+                name: true,
+                key: true,
+              },
+            },
+          },
+        }),
+        prisma.brewSession.count({ where }),
+      ]);
+    }
 
     const totalPages = Math.ceil(total / limit);
 

@@ -118,7 +118,12 @@ export const logout = async (
   next: NextFunction
 ) => {
   try {
-    res.clearCookie('access_token');
+    // Clear cookie with the same options used when setting it
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
 
     res.status(200).json({
       success: true,

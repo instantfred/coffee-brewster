@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSettings } from '../state/useSettings';
 import { api, BrewSession, BrewMethod } from '../lib/api';
 import { formatWeight, formatVolume, formatTemperature } from '../lib/units';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface LogbookFilters {
   search: string;
@@ -16,6 +17,7 @@ export function Logbook() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { settings } = useSettings();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   
   const [sessions, setSessions] = useState<BrewSession[]>([]);
   const [methods, setMethods] = useState<BrewMethod[]>([]);
@@ -28,55 +30,74 @@ export function Logbook() {
     dateFrom: searchParams.get('from') || '',
     dateTo: searchParams.get('to') || '',
   });
+  
+  // Debounce search value to prevent excessive API calls
+  const debouncedSearch = useDebounce(filters.search, 500);
 
-  // Load sessions and methods
+  // Load methods on mount
   useEffect(() => {
-    const loadData = async () => {
+    const loadMethods = async () => {
+      try {
+        const methodsResponse = await api.getMethods();
+        if (methodsResponse.success && methodsResponse.methods) {
+          setMethods(methodsResponse.methods);
+        }
+      } catch (error) {
+        console.error('Failed to load methods:', error);
+      }
+    };
+    
+    loadMethods();
+  }, []);
+
+  // Load sessions when debounced search changes
+  useEffect(() => {
+    const loadSessions = async () => {
       setIsLoading(true);
       try {
-        const [sessionsResponse, methodsResponse] = await Promise.all([
-          api.getSessions({
-            q: filters.search || undefined,
-            page: 1,
-            limit: 50,
-          }),
-          api.getMethods(),
-        ]);
+        const sessionsResponse = await api.getSessions({
+          q: debouncedSearch || undefined,
+          page: 1,
+          limit: 50,
+        });
 
         if (sessionsResponse.success && sessionsResponse.sessions) {
           setSessions(sessionsResponse.sessions);
         } else {
           throw new Error(sessionsResponse.error || 'Failed to load sessions');
         }
-
-        if (methodsResponse.success && methodsResponse.methods) {
-          setMethods(methodsResponse.methods);
-        }
       } catch (error) {
-        console.error('Failed to load logbook data:', error);
+        console.error('Failed to load sessions:', error);
         setError('Failed to load your brewing sessions');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadData();
-  }, [filters.search]);
+    loadSessions();
+  }, [debouncedSearch]);
 
-  // Update URL params when filters change
+  // Update URL params when filters change (except search which is debounced)
   useEffect(() => {
     const params = new URLSearchParams();
-    if (filters.search) params.set('search', filters.search);
+    if (debouncedSearch) params.set('search', debouncedSearch);
     if (filters.methodId) params.set('method', filters.methodId);
     if (filters.rating) params.set('rating', filters.rating);
     if (filters.dateFrom) params.set('from', filters.dateFrom);
     if (filters.dateTo) params.set('to', filters.dateTo);
     
-    setSearchParams(params);
-  }, [filters, setSearchParams]);
+    setSearchParams(params, { replace: true }); // Use replace to avoid adding to history on each keystroke
+  }, [debouncedSearch, filters.methodId, filters.rating, filters.dateFrom, filters.dateTo, setSearchParams]);
 
   const handleFilterChange = (key: keyof LogbookFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+    
+    // Keep focus on search input after state update
+    if (key === 'search' && searchInputRef.current) {
+      requestAnimationFrame(() => {
+        searchInputRef.current?.focus();
+      });
+    }
   };
 
   const clearFilters = () => {
@@ -201,12 +222,14 @@ export function Logbook() {
             </label>
             <div className="relative">
               <input
+                ref={searchInputRef}
                 type="text"
                 id="search"
                 placeholder="Search by notes, bean variety, roaster..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
                 className="input pl-10 w-full"
+                autoComplete="off"
               />
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

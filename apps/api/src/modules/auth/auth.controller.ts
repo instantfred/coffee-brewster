@@ -23,10 +23,8 @@ export const register = async (
       throw new AppError('User with this email already exists', 409);
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user and default settings
     const user = await prisma.user.create({
       data: {
         email,
@@ -49,10 +47,8 @@ export const register = async (
       },
     });
 
-    // Generate token
     const token = generateAccessToken(user.id);
 
-    // Set cookie
     res.cookie('access_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -78,7 +74,6 @@ export const login = async (
   try {
     const { email, password } = loginSchema.parse(req.body);
 
-    // Find user
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -94,10 +89,8 @@ export const login = async (
       throw new AppError('Invalid credentials', 401);
     }
 
-    // Generate token
     const token = generateAccessToken(user.id);
 
-    // Set cookie
     res.cookie('access_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

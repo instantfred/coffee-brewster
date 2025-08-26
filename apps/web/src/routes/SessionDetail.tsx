@@ -318,7 +318,7 @@ export function SessionDetail() {
               <div key={index} className="flex items-center space-x-4">
                 <div className="flex-shrink-0 w-16 text-center">
                   <div className="text-sm font-mono text-primary-600 dark:text-primary-400">
-                    {formatTime(pour.atSec)}
+                    {formatTime(pour.atSec || pour.timestamp || 0)}
                   </div>
                 </div>
                 
@@ -337,9 +337,11 @@ export function SessionDetail() {
                     <span className="font-medium text-gray-900 dark:text-white">
                       {pour.label}
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {settings ? formatVolume(pour.volumeMl, settings) : `${pour.volumeMl}ml`}
-                    </span>
+                    {pour.volumeMl !== undefined && pour.volumeMl !== null && (
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {settings ? formatVolume(pour.volumeMl, settings) : `${pour.volumeMl}ml`}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -362,7 +364,7 @@ export function SessionDetail() {
                     }`}></div>
                     <div className="mt-2 text-xs text-center">
                       <div className="font-mono text-gray-600 dark:text-gray-400">
-                        {formatTime(pour.atSec)}
+                        {formatTime(pour.atSec || pour.timestamp || 0)}
                       </div>
                       <div className="text-gray-500 dark:text-gray-500 max-w-16 truncate">
                         {pour.label}

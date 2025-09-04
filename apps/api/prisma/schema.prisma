@@ -24,15 +24,16 @@ model User {
 }
 
 model Settings {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  units           Units    @default(METRIC)
-  tempUnit        TempUnit @default(C)
-  recommend       Boolean  @default(true)
-  defaultMethodId String?
-  cupSizeMl       Int      @default(240) // user's "cup" definition
-  soundEnabled    Boolean  @default(true)
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  units              Units     @default(METRIC)
+  tempUnit           TempUnit  @default(C)
+  waterUnitPreference String   @default("ml") // "ml" or "g"
+  recommend          Boolean   @default(true)
+  defaultMethodId    String?
+  cupSizeMl          Int       @default(240) // user's "cup" definition
+  soundEnabled       Boolean   @default(true)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("settings")
 }

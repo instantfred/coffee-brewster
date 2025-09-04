@@ -32,6 +32,7 @@ export interface User {
 export interface UserSettings {
   units: 'METRIC' | 'IMPERIAL';
   tempUnit: 'C' | 'F';
+  waterUnitPreference: 'ml' | 'g';
   recommend: boolean;
   defaultMethodId: string | null;
   cupSizeMl: number;

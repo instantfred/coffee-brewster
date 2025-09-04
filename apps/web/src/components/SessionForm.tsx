@@ -238,7 +238,7 @@ export function SessionForm({
                   step="0.5"
                   className="input flex-1"
                 />
-                <span className="text-sm text-gray-500 dark:text-gray-400">°C</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{settings.tempUnit === 'F' ? '°F' : '°C'}</span>
               </div>
               {errors.waterTempC && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">

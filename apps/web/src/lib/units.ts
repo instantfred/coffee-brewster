@@ -21,6 +21,11 @@ export const formatWeight = (grams: number, settings: UserSettings): string => {
 };
 
 export const formatVolume = (ml: number, settings: UserSettings): string => {
+  // Check if user prefers to see water in grams
+  if (settings.waterUnitPreference === 'g') {
+    return `${ml} g`; // 1ml water ≈ 1g
+  }
+  
   if (settings.units === 'IMPERIAL') {
     return `${mlToOz(ml)} fl oz`;
   }
@@ -49,6 +54,11 @@ export const parseVolume = (value: string, settings: UserSettings): number => {
   const num = parseFloat(value);
   if (isNaN(num)) return 0;
   
+  // If water unit preference is grams, treat it as 1:1 with ml
+  if (settings.waterUnitPreference === 'g') {
+    return num; // 1g water ≈ 1ml
+  }
+  
   if (settings.units === 'IMPERIAL') {
     return ozToMl(num);
   }
@@ -74,6 +84,7 @@ export const displayWeight = (grams: number, settings: UserSettings): number => 
 };
 
 export const displayVolume = (ml: number, settings: UserSettings): number => {
+  // Water preference doesn't affect display value (1ml = 1g)
   if (settings.units === 'IMPERIAL') {
     return mlToOz(ml);
   }
@@ -93,6 +104,10 @@ export const getWeightUnit = (settings: UserSettings): string => {
 };
 
 export const getVolumeUnit = (settings: UserSettings): string => {
+  // Check water unit preference first
+  if (settings.waterUnitPreference === 'g') {
+    return 'g';
+  }
   return settings.units === 'IMPERIAL' ? 'fl oz' : 'ml';
 };
 
@@ -106,4 +121,21 @@ export const formatCupSize = (cupSizeMl: number, settings: UserSettings): string
     return `${mlToOz(cupSizeMl)} fl oz`;
   }
   return `${cupSizeMl} ml`;
+};
+
+// Water-specific formatting functions
+export const formatWater = (ml: number, settings: UserSettings): string => {
+  return formatVolume(ml, settings);
+};
+
+export const getWaterUnit = (settings: UserSettings): string => {
+  return getVolumeUnit(settings);
+};
+
+export const displayWater = (ml: number, settings: UserSettings): number => {
+  return displayVolume(ml, settings);
+};
+
+export const parseWater = (value: string, settings: UserSettings): number => {
+  return parseVolume(value, settings);
 };

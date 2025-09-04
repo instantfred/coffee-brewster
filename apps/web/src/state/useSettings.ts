@@ -16,9 +16,11 @@ interface SettingsState {
 const defaultSettings: UserSettings = {
   units: 'METRIC',
   tempUnit: 'C',
+  waterUnitPreference: 'ml',
   recommend: true,
   defaultMethodId: null,
   cupSizeMl: 240,
+  soundEnabled: true,
 };
 
 export const useSettings = create<SettingsState>((set, get) => ({

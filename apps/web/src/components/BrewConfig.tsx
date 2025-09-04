@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { BrewMethod } from '../lib/api';
 import { useSettings } from '../state/useSettings';
-import { formatWeight, formatVolume, displayWeight, displayVolume, parseWeight, parseVolume } from '../lib/units';
+import { formatWeight, formatVolume, displayWeight, displayVolume, parseWeight, parseVolume, getVolumeUnit } from '../lib/units';
 
 const brewConfigSchema = z.object({
   ratio: z.number().min(8).max(20),
@@ -233,7 +233,7 @@ export function BrewConfig({ method, onConfigChange }: BrewConfigProps) {
                   step="10"
                   className="input w-32"
                 />
-                <span className="text-sm text-gray-500 dark:text-gray-400">ml</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{getVolumeUnit(settings)}</span>
               </div>
             </div>
           )}

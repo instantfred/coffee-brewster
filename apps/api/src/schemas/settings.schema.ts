@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const updateSettingsSchema = z.object({
   units: z.enum(['METRIC', 'IMPERIAL']).optional(),
   tempUnit: z.enum(['C', 'F']).optional(),
+  waterUnitPreference: z.enum(['ml', 'g']).optional(),
   recommend: z.boolean().optional(),
   defaultMethodId: z.string().optional().nullable(),
   cupSizeMl: z

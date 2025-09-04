@@ -18,6 +18,7 @@ export const getSettings = async (
       select: {
         units: true,
         tempUnit: true,
+        waterUnitPreference: true,
         recommend: true,
         defaultMethodId: true,
         cupSizeMl: true,
@@ -67,6 +68,7 @@ export const updateSettings = async (
         userId: req.user.id,
         units: updates.units || 'METRIC',
         tempUnit: updates.tempUnit || 'C',
+        waterUnitPreference: updates.waterUnitPreference || 'ml',
         recommend: updates.recommend ?? true,
         defaultMethodId: updates.defaultMethodId,
         cupSizeMl: updates.cupSizeMl || 240,
@@ -75,6 +77,7 @@ export const updateSettings = async (
       select: {
         units: true,
         tempUnit: true,
+        waterUnitPreference: true,
         recommend: true,
         defaultMethodId: true,
         cupSizeMl: true,

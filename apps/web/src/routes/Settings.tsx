@@ -11,12 +11,14 @@ import { api } from '../lib/api';
 const settingsSchema = z.object({
   units: z.enum(['METRIC', 'IMPERIAL']),
   tempUnit: z.enum(['C', 'F']),
+  waterUnitPreference: z.enum(['ml', 'g']),
   recommend: z.boolean(),
   defaultMethodId: z.string().nullable(),
   cupSizeMl: z
     .number()
     .min(100, 'Cup size must be at least 100ml')
     .max(1000, 'Cup size must be less than 1000ml'),
+  soundEnabled: z.boolean(),
 });
 
 type SettingsFormData = z.infer<typeof settingsSchema>;
@@ -223,6 +225,62 @@ export function Settings() {
                           )}
                         </div>
                         <span className="font-medium text-gray-900 dark:text-white">Fahrenheit (°F)</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Water Unit Preference */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Water Measurement
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 dark:border-gray-600">
+                      <input
+                        {...register('waterUnitPreference')}
+                        type="radio"
+                        value="ml"
+                        className="sr-only"
+                      />
+                      <div className="flex items-center">
+                        <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                          watch('waterUnitPreference') === 'ml' 
+                            ? 'border-primary-600 bg-primary-600' 
+                            : 'border-gray-300 dark:border-gray-600'
+                        }`}>
+                          {watch('waterUnitPreference') === 'ml' && (
+                            <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900 dark:text-white">Milliliters (ml)</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">Volume-based</div>
+                        </div>
+                      </div>
+                    </label>
+                    
+                    <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 dark:border-gray-600">
+                      <input
+                        {...register('waterUnitPreference')}
+                        type="radio"
+                        value="g"
+                        className="sr-only"
+                      />
+                      <div className="flex items-center">
+                        <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
+                          watch('waterUnitPreference') === 'g' 
+                            ? 'border-primary-600 bg-primary-600' 
+                            : 'border-gray-300 dark:border-gray-600'
+                        }`}>
+                          {watch('waterUnitPreference') === 'g' && (
+                            <div className="w-2 h-2 bg-white rounded-full mx-auto mt-0.5"></div>
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900 dark:text-white">Grams (g)</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">Weight-based (1ml ≈ 1g)</div>
+                        </div>
                       </div>
                     </label>
                   </div>

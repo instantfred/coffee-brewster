@@ -71,6 +71,7 @@ model BrewSession {
   coffeeGrams  Float
   waterMl      Float
   yieldMl      Float
+  brewRatio    Float      @default(15) // actual ratio used for brewing (e.g., 15 for 1:15)
   grindSetting String? // free text or grinder scale
   waterTempC   Float?
   rating       Int? // 1–5

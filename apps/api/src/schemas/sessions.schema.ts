@@ -18,6 +18,11 @@ export const createSessionSchema = z.object({
     .number()
     .min(30, 'Yield must be at least 30ml')
     .max(2500, 'Yield must be less than 2500ml'),
+  brewRatio: z
+    .number()
+    .min(8, 'Brew ratio must be at least 8')
+    .max(20, 'Brew ratio must be at most 20')
+    .optional(),
   grindSetting: z.string().max(100).optional(),
   waterTempC: z
     .number()

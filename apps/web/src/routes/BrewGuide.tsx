@@ -111,6 +111,7 @@ export function BrewGuide() {
         coffeeGrams: brewConfig.coffeeGrams,
         waterMl: brewConfig.waterMl,
         yieldMl: brewConfig.customYield ? (brewConfig.yieldMl || 0) : (brewConfig.cups * (settings?.cupSizeMl || 240)),
+        brewRatio: brewConfig.ratio,
         grindSetting: sessionData.grindSetting,
         waterTempC: sessionData.waterTempC,
         rating: sessionData.rating,

@@ -260,7 +260,7 @@ export function SessionDetail() {
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">Ratio:</span>
               <span className="font-medium text-gray-900 dark:text-white">
-                1:{(session.waterMl / session.coffeeGrams).toFixed(1)}
+                1:{session.brewRatio ? session.brewRatio.toFixed(1) : (session.waterMl / session.coffeeGrams).toFixed(1)}
               </span>
             </div>
           </div>

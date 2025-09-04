@@ -59,6 +59,7 @@ export interface BrewSession {
   coffeeGrams: number;
   waterMl: number;
   yieldMl: number;
+  brewRatio?: number;
   grindSetting: string | null;
   waterTempC: number | null;
   rating: number | null;

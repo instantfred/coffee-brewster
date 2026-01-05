@@ -20,11 +20,11 @@ export function Home() {
               Welcome back, {user?.displayName || user?.email}!
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Ready to brew some amazing coffee? Start with a guided brewing session or use our reverse brew calculator.
+              Ready to brew some amazing coffee? Start with a guided brewing session.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
             <Link
               to="/brew"
               className="card p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
@@ -39,23 +39,6 @@ export function Home() {
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
                 Guided brewing with step-by-step timers for V60, Chemex, AeroPress, and more.
-              </p>
-            </Link>
-
-            <Link
-              to="/reverse"
-              className="card p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-            >
-              <div className="text-primary-600 dark:text-primary-400 mb-4">
-                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                Reverse Brew
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Tell us how many cups you want, and we'll calculate the perfect recipe.
               </p>
             </Link>
 
@@ -117,12 +100,12 @@ export function Home() {
             Coffee Brewster
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Your guide to perfect coffee brewing. Step-by-step timers, reverse brew calculations, 
+            Your guide to perfect coffee brewing. Step-by-step timers
             and a personal logbook to track your brewing journey.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
           <div className="card p-6">
             <div className="text-primary-600 dark:text-primary-400 mb-4">
               <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,20 +117,6 @@ export function Home() {
             </h3>
             <p className="text-gray-600 dark:text-gray-300">
               Step-by-step timers with contextual prompts for V60, Chemex, AeroPress, French Press, and Moka Pot.
-            </p>
-          </div>
-
-          <div className="card p-6">
-            <div className="text-primary-600 dark:text-primary-400 mb-4">
-              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Reverse Calculator
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Tell us how many cups you want, and we'll calculate the precise coffee dose, water amount, and timing.
             </p>
           </div>
 

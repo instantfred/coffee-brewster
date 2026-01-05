@@ -4,7 +4,6 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { Home } from './routes/Home';
 import { BrewGuide } from './routes/BrewGuide';
-import { ReverseBrew } from './routes/ReverseBrew';
 import { Logbook } from './routes/Logbook';
 import { SessionDetail } from './routes/SessionDetail';
 import { Settings } from './routes/Settings';
@@ -44,29 +43,21 @@ function App() {
                     <Route path="/" element={<Home />} />
                     
                     {/* Protected routes - require authentication */}
-                    <Route 
-                      path="/brew" 
+                    <Route
+                      path="/brew"
                       element={
                         <ProtectedRoute>
                           <BrewGuide />
                         </ProtectedRoute>
-                      } 
+                      }
                     />
-                    <Route 
-                      path="/reverse" 
-                      element={
-                        <ProtectedRoute>
-                          <ReverseBrew />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/logbook" 
+                    <Route
+                      path="/logbook"
                       element={
                         <ProtectedRoute>
                           <Logbook />
                         </ProtectedRoute>
-                      } 
+                      }
                     />
                     <Route 
                       path="/logbook/:id" 

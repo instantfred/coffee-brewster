@@ -1,12 +1,11 @@
 # Coffee Brewster ☕
 
-A minimal, modern Progressive Web App (PWA) that guides people through barista-style brewing, logs every session, and offers a "reverse brew" calculator.
+A minimal, modern Progressive Web App (PWA) that guides people through barista-style brewing and logs every session.
 
 ## 🌟 Features
 
 ### Core Brewing Features
 - **Step-by-step guided brewing timer** with contextual prompts and audio cues
-- **Reverse brew calculator** - specify cups desired → get complete recipe with timing
 - **Personal brewing logbook** with session tracking, notes, and 5-star ratings
 - **5 brewing methods supported**: V60, Chemex, AeroPress, French Press, Moka Pot
 - **Smart recommendations** for grind size, water temperature, and filter types
@@ -29,10 +28,10 @@ A minimal, modern Progressive Web App (PWA) that guides people through barista-s
 
 ## 🛠️ Tech Stack
 
-**Backend**: Node.js 20, Express, TypeScript, Prisma ORM, SQLite/PostgreSQL  
-**Frontend**: React 18 + TypeScript, Vite, Tailwind CSS, Zustand  
-**PWA**: Service Worker, Web App Manifest, Offline Caching  
-**Testing**: Vitest, Jest, Supertest, React Testing Library  
+**Backend**: Node.js 20, Express, TypeScript, Prisma ORM, Supabase (PostgreSQL)
+**Frontend**: React 18 + TypeScript, Vite, Tailwind CSS, Zustand
+**PWA**: Service Worker, Web App Manifest, Offline Caching
+**Testing**: Vitest, Jest, Supertest, React Testing Library
 **Deployment**: Docker ready, Vercel/Netlify compatible
 
 ## 🚀 Quick Start
@@ -55,11 +54,13 @@ Create environment file for the API:
 cat > apps/api/.env << EOF
 NODE_ENV=development
 PORT=4000
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://your-supabase-connection-string"
 JWT_SECRET="your-super-secret-jwt-key-that-is-at-least-32-characters-long"
 CORS_ORIGIN="http://localhost:5173"
 EOF
 ```
+
+> **Note**: Get your `DATABASE_URL` from your Supabase project settings under Database → Connection String (use the "Connection Pooling" string for better performance).
 
 ### 3. Database Setup
 ```bash
@@ -89,8 +90,7 @@ This starts:
 1. Open **http://localhost:5173** in your browser
 2. **Register an account** to get started
 3. **Choose a brewing method** and start your first guided brew!
-4. **Try the reverse calculator** to plan your next coffee
-5. **Check your logbook** to track brewing sessions
+4. **Check your logbook** to track brewing sessions
 
 ## 📱 PWA Installation
 
@@ -162,16 +162,17 @@ coffee-brewster/
 
 ## 🔧 Configuration
 
-### Database Options
-- **SQLite** (default): Zero-config local development
-- **PostgreSQL**: Production-ready with connection string in `DATABASE_URL`
+### Database
+- **Supabase PostgreSQL**: Hosted PostgreSQL database with connection pooling
+- Get your connection string from Supabase project settings
+- Use the "Connection Pooling" string for better performance
 
 ### Environment Variables
 ```bash
 # apps/api/.env
 NODE_ENV=development|production
 PORT=4000
-DATABASE_URL="file:./dev.db"  # SQLite or postgres://...
+DATABASE_URL="postgresql://postgres:[password]@[host]/postgres"
 JWT_SECRET="your-32-char-secret"
 CORS_ORIGIN="http://localhost:5173"
 ```

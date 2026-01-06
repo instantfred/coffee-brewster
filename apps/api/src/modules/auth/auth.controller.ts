@@ -4,7 +4,6 @@ import { prisma } from '../../lib/prisma';
 import { generateAccessToken } from '../../lib/tokens';
 import { AppError } from '../../middleware/error';
 import { registerSchema, loginSchema } from '../../schemas/auth.schema';
-import { AuthenticatedRequest } from '../../middleware/auth';
 
 export const register = async (
   req: Request,
@@ -113,7 +112,7 @@ export const login = async (
 };
 
 export const logout = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -135,7 +134,7 @@ export const logout = async (
 };
 
 export const me = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

@@ -4,17 +4,22 @@ import { prisma } from '../lib/prisma';
 import { env } from '../config/env';
 import { AppError } from './error';
 
-export interface AuthenticatedRequest extends Request {
-  user: {
-    id: string;
-    email: string;
-    displayName: string | null;
-  };
+// Extend Express Request type to include user property
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        displayName: string | null;
+      };
+    }
+  }
 }
 
 export const authenticate = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
@@ -39,7 +44,7 @@ export const authenticate = async (
       throw new AppError('User not found', 401);
     }
 
-    (req as AuthenticatedRequest).user = user;
+    req.user = user;
     next();
   } catch (error) {
     next(error);
@@ -48,7 +53,7 @@ export const authenticate = async (
 
 export const requireAuth = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
@@ -73,7 +78,7 @@ export const requireAuth = async (
       throw new AppError('User not found', 401);
     }
 
-    (req as AuthenticatedRequest).user = user;
+    req.user = user;
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {

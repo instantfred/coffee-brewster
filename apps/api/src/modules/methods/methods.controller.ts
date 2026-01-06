@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../middleware/error';
-import { AuthenticatedRequest } from '../../middleware/auth';
 
 export const getMethods = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

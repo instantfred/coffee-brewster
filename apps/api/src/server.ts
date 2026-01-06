@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Health check endpoint
-app.get('/healthz', (req, res) => {
+app.get('/healthz', (_req, res) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -51,7 +51,7 @@ app.use('/api/reverse', reverseRoutes);
 app.use('/api/sessions', sessionsRoutes);
 
 // Catch-all for unmatched API routes
-app.use('/api', (req, res, next) => {
+app.use('/api', (_req, res, _next) => {
   res.status(404).json({
     success: false,
     message: 'API endpoint not found',

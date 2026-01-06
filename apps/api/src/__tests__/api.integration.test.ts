@@ -4,7 +4,6 @@ import { prisma } from '../lib/prisma';
 
 describe('API Integration Tests', () => {
   let authToken: string;
-  let userId: string;
   let methodId: string;
   let sessionId: string;
 
@@ -74,8 +73,6 @@ describe('API Integration Tests', () => {
         displayName: 'Test User',
       });
       expect(response.headers['set-cookie']).toBeDefined();
-
-      userId = response.body.user.id;
     });
 
     it('should not register user with existing email', async () => {

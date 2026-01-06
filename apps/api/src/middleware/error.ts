@@ -14,16 +14,16 @@ export class AppError extends Error {
   }
 }
 
-export const notFound = (req: Request, res: Response, next: NextFunction) => {
+export const notFound = (req: Request, _res: Response, next: NextFunction) => {
   const error = new AppError(`Not found - ${req.originalUrl}`, 404);
   next(error);
 };
 
 export const errorHandler = (
   error: Error,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   let statusCode = 500;
   let message = 'Internal Server Error';

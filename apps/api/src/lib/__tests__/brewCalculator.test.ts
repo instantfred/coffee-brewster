@@ -1,4 +1,4 @@
-import { planBrew, MethodKey, BrewMethod } from '../brewCalculator';
+import { planBrew, BrewMethod } from '../brewCalculator';
 
 describe('brewCalculator', () => {
   const mockV60Method: BrewMethod = {

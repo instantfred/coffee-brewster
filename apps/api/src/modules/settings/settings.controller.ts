@@ -1,11 +1,10 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../middleware/error';
 import { updateSettingsSchema } from '../../schemas/settings.schema';
-import { AuthenticatedRequest } from '../../middleware/auth';
 
 export const getSettings = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -40,7 +39,7 @@ export const getSettings = async (
 };
 
 export const updateSettings = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

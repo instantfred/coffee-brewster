@@ -1,12 +1,11 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../../lib/prisma';
 import { AppError } from '../../middleware/error';
 import { reverseBrewSchema } from '../../schemas/reverse.schema';
 import { planBrew } from '../../lib/brewCalculator';
-import { AuthenticatedRequest } from '../../middleware/auth';
 
 export const calculateReverseBrew = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

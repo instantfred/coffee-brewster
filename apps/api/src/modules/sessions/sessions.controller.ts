@@ -6,10 +6,9 @@ import {
   updateSessionSchema,
   getSessionsQuerySchema,
 } from '../../schemas/sessions.schema';
-import { AuthenticatedRequest } from '../../middleware/auth';
 
 export const getSessions = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -119,7 +118,7 @@ export const getSessions = async (
 };
 
 export const getSession = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -155,7 +154,7 @@ export const getSession = async (
 };
 
 export const createSession = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -197,7 +196,7 @@ export const createSession = async (
 };
 
 export const updateSession = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -252,7 +251,7 @@ export const updateSession = async (
 };
 
 export const deleteSession = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

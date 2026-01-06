@@ -1,4 +1,6 @@
-const API_BASE_URL = '/api';
+// In development, proxy to local API server via Vite proxy (/api → http://localhost:4000)
+// In production, use environment variable or fallback to relative /api path
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface ApiResponse<T = any> {
   success: boolean;

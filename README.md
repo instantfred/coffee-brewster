@@ -201,7 +201,27 @@ cd apps/web && npm test
 
 ## 🚢 Deployment
 
-### Using Docker
+### Free Tier Deployment (Recommended)
+
+Deploy to **100% free** hosting platforms with this stack:
+- **Frontend**: Vercel
+- **Backend**: Render
+- **Database**: Supabase PostgreSQL
+
+**📖 [Complete Deployment Guide](./DEPLOYMENT.md)** - Step-by-step instructions
+
+**✅ [Deployment Checklist](./DEPLOYMENT-CHECKLIST.md)** - Verify everything works
+
+### Quick Deploy Summary
+
+1. **Database**: Create Supabase project → Get connection string
+2. **Backend**: Deploy to Render → Add environment variables → Deploy
+3. **Frontend**: Deploy to Vercel → Add API URL → Deploy
+4. **Configure**: Update CORS settings → Seed database → Test
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions with screenshots.
+
+### Alternative: Docker
 ```bash
 # Build containers
 docker build -t coffee-brewster-api ./apps/api
@@ -210,11 +230,6 @@ docker build -t coffee-brewster-web ./apps/web
 # Run with docker-compose
 docker-compose up
 ```
-
-### Using Vercel/Netlify
-1. **Frontend**: Deploy `apps/web` to Vercel/Netlify
-2. **Backend**: Deploy `apps/api` to Railway/Render/Heroku
-3. Update `CORS_ORIGIN` with your frontend URL
 
 ## 🤝 Contributing
 

@@ -4,7 +4,7 @@ services:
     runtime: node
     region: oregon
     plan: free
-    buildCommand: cd apps/api && npm install && npx prisma generate && npm run build
+    buildCommand: cd apps/api && npm ci && npx prisma generate && npm run build
     startCommand: cd apps/api && npx prisma db push && npm start
     envVars:
       - key: NODE_ENV

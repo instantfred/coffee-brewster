@@ -155,7 +155,7 @@ export function BrewConfig({ method, onConfigChange }: BrewConfigProps) {
         {/* Ratio */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Coffee-to-Water Ratio
+            Brew Ratio (Coffee to Final Yield)
           </label>
           <div className="flex items-center space-x-4">
             <div className="flex-1">
@@ -179,6 +179,9 @@ export function BrewConfig({ method, onConfigChange }: BrewConfigProps) {
             <span>Balanced (1:15)</span>
             <span>Light (1:20)</span>
           </div>
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            Ratio is based on final brewed coffee, not total water poured
+          </p>
           {errors.ratio && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
               {errors.ratio.message}
@@ -240,23 +243,36 @@ export function BrewConfig({ method, onConfigChange }: BrewConfigProps) {
         </div>
 
         {/* Calculated Results */}
-        <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <div>
-            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-              Coffee Needed
-            </label>
-            <div className="text-lg font-semibold text-gray-900 dark:text-white">
-              {formatWeight(coffeeGrams, settings)}
+        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-3">
+            <div>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                Coffee Needed
+              </label>
+              <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                {formatWeight(coffeeGrams, settings)}
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                Water to Pour
+              </label>
+              <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                {formatVolume(waterMl, settings)}
+              </div>
+            </div>
+            <div className="col-span-2 md:col-span-1">
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
+                Expected Yield
+              </label>
+              <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                {formatVolume(customYield ? (yieldMl || 0) : (cups * settings.cupSizeMl), settings)}
+              </div>
             </div>
           </div>
-          <div>
-            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-              Total Water
-            </label>
-            <div className="text-lg font-semibold text-gray-900 dark:text-white">
-              {formatVolume(waterMl, settings)}
-            </div>
-          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-3">
+            Coffee grounds absorb ~{method.key === 'v60' || method.key === 'chemex' ? '2' : method.key === 'french_press' ? '2.2' : method.key === 'aeropress' ? '1.5' : '0.8'}× their weight in water, so you'll pour more water than the final yield
+          </p>
         </div>
 
         {/* Quick Ratio Presets */}

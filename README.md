@@ -32,7 +32,7 @@ A minimal, modern Progressive Web App (PWA) that guides people through barista-s
 **Frontend**: React 18 + TypeScript, Vite, Tailwind CSS, Zustand
 **PWA**: Service Worker, Web App Manifest, Offline Caching
 **Testing**: Vitest, Jest, Supertest, React Testing Library
-**Deployment**: Docker ready, Vercel/Netlify compatible
+**Deployment**: Render (API), Vercel (Web), Docker ready, GitHub Actions CI/CD
 
 ## 🚀 Quick Start
 
@@ -109,14 +109,14 @@ This starts:
 ```bash
 # Development
 npm run dev              # Start both servers
-npm run dev:api          # Start API server only  
+npm run dev:api          # Start API server only
 npm run dev:web          # Start web app only
 
 # Building
 npm run build            # Build both applications
 npm run typecheck        # Type check all code
 
-# Testing  
+# Testing
 npm test                 # Run all tests
 npm run test:api         # Run backend tests only
 npm run test:web         # Run frontend tests only
@@ -130,6 +130,9 @@ cd apps/api
 npm run db:studio        # Open Prisma Studio
 npm run db:push          # Push schema changes
 npm run db:seed          # Seed database
+
+# Deployment
+./scripts/pre-deploy-check.sh  # Verify deployment readiness
 ```
 
 ## 📁 Project Structure
@@ -144,9 +147,10 @@ coffee-brewster/
 │   │   │   ├── middleware/     # Auth, error handling
 │   │   │   └── schemas/        # Zod validation schemas
 │   │   ├── prisma/             # Database schema and seeds
-│   │   └── __tests__/          # API integration tests
+│   │   ├── __tests__/          # API integration tests
+│   │   └── .env.example        # Environment variables template
 │   │
-│   └── web/                    # React Frontend  
+│   └── web/                    # React Frontend
 │       ├── src/
 │       │   ├── components/     # Reusable UI components
 │       │   ├── routes/         # Page components
@@ -154,8 +158,15 @@ coffee-brewster/
 │       │   ├── state/          # Zustand stores
 │       │   └── styles/         # Global CSS and Tailwind
 │       ├── public/             # PWA manifest, icons
-│       └── __tests__/          # Component tests
+│       ├── __tests__/          # Component tests
+│       └── .env.example        # Environment variables template
 │
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # CI/CD pipeline
+├── render.yaml                 # Render deployment config
+├── DEPLOYMENT.md               # Deployment guide
+├── DEPLOYMENT-CHECKLIST.md     # Deployment verification
 ├── package.json                # Workspace configuration
 └── README.md                   # This file
 ```
@@ -205,7 +216,7 @@ cd apps/web && npm test
 
 Deploy to **100% free** hosting platforms with this stack:
 - **Frontend**: Vercel
-- **Backend**: Render
+- **Backend**: Render.com
 - **Database**: Supabase PostgreSQL
 
 **📖 [Complete Deployment Guide](./DEPLOYMENT.md)** - Step-by-step instructions
@@ -214,14 +225,29 @@ Deploy to **100% free** hosting platforms with this stack:
 
 ### Quick Deploy Summary
 
+The project includes production-ready configuration files:
+- **`render.yaml`** - Automated Render deployment configuration
+- **`.github/workflows/deploy.yml`** - CI/CD pipeline for automated testing
+
+**Deployment Steps:**
 1. **Database**: Create Supabase project → Get connection string
-2. **Backend**: Deploy to Render → Add environment variables → Deploy
-3. **Frontend**: Deploy to Vercel → Add API URL → Deploy
+2. **Backend**: Deploy to Render using `render.yaml` → Add environment variables → Auto-deploys
+3. **Frontend**: Deploy to Vercel → Add API URL → Auto-deploys
 4. **Configure**: Update CORS settings → Seed database → Test
 
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions with screenshots.
 
-### Alternative: Docker
+### CI/CD Pipeline
+
+GitHub Actions automatically runs on every push:
+- Linting and type checking
+- Full test suite (API + Web)
+- Validates code before deployment
+- Vercel and Render auto-deploy on push to `main`
+
+### Alternative Deployment Options
+
+**Docker:**
 ```bash
 # Build containers
 docker build -t coffee-brewster-api ./apps/api
@@ -230,6 +256,14 @@ docker build -t coffee-brewster-web ./apps/web
 # Run with docker-compose
 docker-compose up
 ```
+
+**Railway (Backend + Database):**
+- All-in-one platform alternative to Render
+- See [DEPLOYMENT.md](./DEPLOYMENT.md#alternative-deployment-options) for details
+
+**Netlify (Frontend):**
+- Alternative to Vercel
+- See [DEPLOYMENT.md](./DEPLOYMENT.md#alternative-deployment-options) for details
 
 ## 🤝 Contributing
 

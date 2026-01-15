@@ -8,7 +8,7 @@ import { SessionForm } from '../components/SessionForm';
 import { useSettings } from '../state/useSettings';
 import { api, BrewMethod } from '../lib/api';
 
-type BrewStep = 'method' | 'configure' | 'schedule' | 'timer' | 'session';
+type BrewStep = 'method' | 'configure' | 'schedule' | 'timer' | 'complete' | 'session';
 
 interface BrewConfigData {
   ratio: number;
@@ -97,6 +97,10 @@ export function BrewGuide() {
   const handleTimerFinish = (elapsedSec: number, pours: ActualPour[]) => {
     setTimerElapsedSec(elapsedSec);
     setActualPours(pours);
+    setCurrentStep('complete');
+  };
+
+  const handleLogBrew = () => {
     setCurrentStep('session');
   };
 
@@ -391,6 +395,50 @@ export function BrewGuide() {
               schedule={brewConfig.schedule}
               onFinish={handleTimerFinish}
             />
+          </div>
+        ) : null;
+
+      case 'complete':
+        return selectedMethod && brewConfig ? (
+          <div className="max-w-md mx-auto">
+            <div className="card p-8 text-center">
+              {/* Success Icon */}
+              <div className="w-20 h-20 mx-auto mb-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                <svg className="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Brew Complete!
+              </h2>
+
+              {/* Brew Summary */}
+              <div className="text-gray-600 dark:text-gray-300 mb-6">
+                <div className="font-medium text-lg mb-1">{selectedMethod.name}</div>
+                <div className="text-sm space-y-1">
+                  <div>{Math.floor(timerElapsedSec / 60)}:{(timerElapsedSec % 60).toString().padStart(2, '0')} total time</div>
+                  <div>{brewConfig.coffeeGrams}g coffee &bull; {brewConfig.waterMl}ml water</div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-3">
+                <button
+                  onClick={handleLogBrew}
+                  className="btn btn-primary w-full py-3 text-lg"
+                >
+                  Log this Brew
+                </button>
+                <button
+                  onClick={handleSkipSession}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm"
+                >
+                  Skip logging
+                </button>
+              </div>
+            </div>
           </div>
         ) : null;
 

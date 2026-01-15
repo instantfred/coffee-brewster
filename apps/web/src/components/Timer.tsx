@@ -185,7 +185,10 @@ export function Timer({ schedule, onFinish, onStep, onTick }: TimerProps) {
   const currentStep = getCurrentStep();
   const nextStep = getNextStep();
   const isLastStep = currentStepIndex >= schedule.length - 1;
-  const timeToNextStep = nextStep ? Math.max(0, nextStep.atSec - elapsedSec) : 0;
+
+  // Calculate total duration for timeline (last step time + 60 sec buffer for drawdown)
+  const lastStepTime = schedule.length > 0 ? schedule[schedule.length - 1].atSec : 0;
+  const totalDuration = lastStepTime + 60;
 
   // Determine if we're at "pour time" - timer has reached or passed the current step's scheduled time
   const isActionTime = currentStep && elapsedSec >= currentStep.atSec && !actualPours[currentStepIndex]?.completed;
@@ -260,10 +263,6 @@ export function Timer({ schedule, onFinish, onStep, onTick }: TimerProps) {
             <div className="text-xl text-gray-600 dark:text-gray-300 mb-3">
               Ready to brew
             </div>
-          ) : nextStep ? (
-            <div className="text-xl text-primary-600 dark:text-primary-400 mb-3">
-              Next pour in <span className="font-mono font-bold">{formatTimeDisplay(timeToNextStep)}</span>
-            </div>
           ) : null}
 
           {/* Step Info */}
@@ -308,26 +307,150 @@ export function Timer({ schedule, onFinish, onStep, onTick }: TimerProps) {
         </div>
       )}
 
-      {/* Horizontal Step Progress */}
+      {/* Visual Timeline */}
       <div className="card p-4 mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center space-x-2">
-            {schedule.map((_, index) => (
-              <div
-                key={index}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  actualPours[index]?.completed
-                    ? 'bg-green-500'
-                    : index === currentStepIndex
-                    ? 'bg-primary-600 ring-2 ring-primary-300'
-                    : 'bg-gray-300 dark:bg-gray-600'
-                }`}
-              />
-            ))}
-          </div>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Timeline</span>
           <span className="text-sm text-gray-500 dark:text-gray-400">
             Step {currentStepIndex + 1} of {schedule.length}
           </span>
+        </div>
+
+        {/* Timeline Bar - with horizontal padding for edge labels */}
+        <div className="relative px-6">
+          {/* Background track */}
+          <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full" />
+
+          {/* Progress fill */}
+          <div
+            className="absolute top-0 left-0 h-2 bg-primary-500 rounded-full transition-all duration-1000"
+            style={{ width: `${Math.min(100, (elapsedSec / totalDuration) * 100)}%` }}
+          />
+
+          {/* Step markers */}
+          {schedule.map((step, index) => {
+            const position = (step.atSec / totalDuration) * 100;
+            const isCompleted = actualPours[index]?.completed;
+            const isCurrent = index === currentStepIndex;
+            const isActive = isCurrent && elapsedSec >= step.atSec && !isCompleted;
+
+            return (
+              <div
+                key={index}
+                className="absolute top-1/2 -translate-y-1/2"
+                style={{ left: `${position}%` }}
+              >
+                {/* Marker dot */}
+                <div
+                  className={`w-4 h-4 -ml-2 rounded-full border-2 transition-all ${
+                    isCompleted
+                      ? 'bg-green-500 border-green-500'
+                      : isActive
+                      ? 'bg-green-500 border-green-300 ring-4 ring-green-300/50 animate-pulse'
+                      : isCurrent
+                      ? 'bg-primary-500 border-primary-300 ring-2 ring-primary-300/50'
+                      : elapsedSec >= step.atSec
+                      ? 'bg-gray-400 border-gray-400'
+                      : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                  }`}
+                />
+              </div>
+            );
+          })}
+
+          {/* Finish marker at end */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2"
+            style={{ left: '100%' }}
+          >
+            <div className={`w-4 h-4 -ml-2 rounded-full border-2 transition-all ${
+              elapsedSec >= totalDuration
+                ? 'bg-green-500 border-green-500'
+                : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`} />
+          </div>
+
+          {/* Current time indicator */}
+          {isRunning && (
+            <div
+              className="absolute top-1/2 -translate-y-1/2 transition-all duration-1000"
+              style={{ left: `${Math.min(100, (elapsedSec / totalDuration) * 100)}%` }}
+            >
+              <div className="w-0 h-0 -ml-1.5 -mt-3 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-primary-600" />
+            </div>
+          )}
+        </div>
+
+        {/* Step labels below timeline */}
+        <div className="relative mt-4 h-12 px-6">
+          {schedule.map((step, index) => {
+            const position = (step.atSec / totalDuration) * 100;
+            const isCompleted = actualPours[index]?.completed;
+            const isCurrent = index === currentStepIndex;
+
+            // Adjust alignment for edge labels
+            const isFirstStep = index === 0;
+            const isLastStepLabel = index === schedule.length - 1;
+            const textAlign = isFirstStep ? 'left' : isLastStepLabel ? 'right' : 'center';
+            const transform = isFirstStep ? 'none' : isLastStepLabel ? 'translateX(-100%)' : 'translateX(-50%)';
+
+            return (
+              <div
+                key={index}
+                className={`absolute transition-all ${
+                  isCurrent ? 'font-semibold' : ''
+                }`}
+                style={{
+                  left: `${position}%`,
+                  transform,
+                  textAlign,
+                  maxWidth: '80px'
+                }}
+              >
+                <div className={`text-xs truncate ${
+                  isCompleted
+                    ? 'text-green-600 dark:text-green-400'
+                    : isCurrent
+                    ? 'text-primary-600 dark:text-primary-400'
+                    : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                  {step.label}
+                </div>
+                <div className={`text-xs ${
+                  isCompleted
+                    ? 'text-green-500 dark:text-green-500'
+                    : 'text-gray-400 dark:text-gray-500'
+                }`}>
+                  {formatTimeDisplay(step.atSec)}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Finish label at end */}
+          <div
+            className="absolute text-right"
+            style={{
+              left: '100%',
+              transform: 'translateX(-100%)',
+              maxWidth: '80px'
+            }}
+          >
+            <div className={`text-xs ${
+              elapsedSec >= totalDuration
+                ? 'text-green-600 dark:text-green-400 font-semibold'
+                : 'text-gray-500 dark:text-gray-400'
+            }`}>
+              Finish
+            </div>
+            <div className={`text-xs ${
+              elapsedSec >= totalDuration
+                ? 'text-green-500 dark:text-green-500'
+                : 'text-gray-400 dark:text-gray-500'
+            }`}>
+              {formatTimeDisplay(totalDuration)}
+            </div>
+          </div>
         </div>
       </div>
 
